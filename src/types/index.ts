@@ -26,6 +26,7 @@ export interface User {
   isVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  tags?: string[];
 }
 
 export interface Education {
@@ -44,7 +45,7 @@ export interface Experience {
 
 // Appointment related types
 export interface Appointment {
-  id: string;
+  _id: string;
   doctorId: User;
   patientId: User;
   appointmentDate: string;

@@ -23,20 +23,18 @@ const getProfilePictureUrl = (profilePicture: string | null | undefined) => {
 };
 
 export function UserProfileDialog({ user }: UserProfileDialogProps) {
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <DialogContent className="max-w-2xl">
+    <DialogContent className="max-w-2xl max-h-[90vh] w-[90vw] overflow-hidden">
       <DialogHeader>
         <DialogTitle>User Profile</DialogTitle>
       </DialogHeader>
-      <ScrollArea className="max-h-[80vh]">
-        <div className="space-y-6">
+      <ScrollArea className="max-h-[calc(90vh-8rem)]">
+        <div className="space-y-6 p-1">
           {/* Header with basic info */}
-          <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <Avatar className="h-20 w-20 sm:h-16 sm:w-16">
               <AvatarImage 
                 src={getProfilePictureUrl(user?.profilePicture)} 
                 alt={`${user?.firstName} ${user?.lastName}`} 
@@ -45,11 +43,11 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="space-y-1">
+            <div className="space-y-1 text-center sm:text-left">
               <h2 className="text-2xl font-bold">
                 {user.firstName} {user.lastName}
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <Badge
                   variant={user.role === 'admin' ? 'default' :
                     user.role === 'doctor' ? 'secondary' : 'outline'}
@@ -91,6 +89,27 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
           {/* Doctor Specific Information */}
           {user.role === "doctor" && (
             <>
+              {user.tags && user.tags.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Specialties</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {user.tags.map((tag:any, index:number) => (
+                        <Badge 
+                          key={index.toString()} 
+                          variant="secondary"
+                          className="capitalize"
+                        >
+                          {tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {user.description && (
                 <Card>
                   <CardHeader>

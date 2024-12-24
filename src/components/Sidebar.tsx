@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   LucideIcon,
+  Tags,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -34,6 +35,7 @@ const menuItems: MenuItem[] = [
   { icon: FileText, label: "Posts", href: "/dashboard/posts" },
   { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+  { icon: Tags, label: "Tags", href: "/dashboard/tags" },
 ];
 
 export function Sidebar() {

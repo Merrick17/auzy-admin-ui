@@ -4,8 +4,8 @@ import { useSetAtom } from 'jotai';
 import { userAtom, isAuthenticatedAtom } from '@/store/atoms';
 import apiClient from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
-import { AuthResponse, RegisterDto } from '@/types';
-
+import { AuthResponse, RegisterDto, LoginDto, ApiResponse } from '@/types';
+import axios from 'axios';
 export const useLogin = () => {
   const setUser = useSetAtom(userAtom);
   const setIsAuthenticated = useSetAtom(isAuthenticatedAtom);
@@ -13,8 +13,8 @@ export const useLogin = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (credentials: { email: string; password: string }) => {
-      const { data } = await apiClient.post<AuthResponse>('/auth/login', credentials);
+    mutationFn: async (credentials: LoginDto) => {
+      const { data } = await apiClient.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
       return data.data;
     },
     onSuccess: ({ token, user }) => {
@@ -29,16 +29,18 @@ export const useLogin = () => {
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
-    mutationFn: async (userData: RegisterDto) => {
-      const { data } = await apiClient.post<AuthResponse>('/auth/register', userData);
-      return data.data;
+    mutationFn: async (formData: FormData) => {
+      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      router.push('/login');
     },
   });
 };

@@ -92,16 +92,17 @@ export default function AppointmentsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+    <div className="space-y-6 p-4 sm:p-8">
+      {/* Header */}
+      <div className="space-y-2">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
           Appointments
         </h2>
         <p className="text-muted-foreground">Manage and track patient appointments.</p>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-primary/50 hover:border-l-primary transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Appointments</CardTitle>
@@ -143,7 +144,7 @@ export default function AppointmentsPage() {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-primary" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
           <Input
             placeholder="Search by doctor or patient..."
             value={searchTerm}
@@ -152,7 +153,7 @@ export default function AppointmentsPage() {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px] border-primary/20 focus:border-primary/50">
+          <SelectTrigger className="w-full sm:w-[180px] border-primary/20 focus:border-primary/50">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -164,120 +165,123 @@ export default function AppointmentsPage() {
         </Select>
       </div>
 
-      <Card className="border-primary/20">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b-primary/20">
-                <TableHead className="text-primary font-semibold">Patient</TableHead>
-                <TableHead className="text-primary font-semibold">Doctor</TableHead>
-                <TableHead className="text-primary font-semibold">Date</TableHead>
-                <TableHead className="text-primary font-semibold">Time</TableHead>
-                <TableHead className="text-primary font-semibold">Status</TableHead>
-                <TableHead className="text-primary font-semibold text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array(3).fill(0).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                  </TableRow>
-                ))
-              ) : filteredAppointments?.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
-                    <p className="text-muted-foreground">No appointments found</p>
-                  </TableCell>
+      {/* Appointments Table */}
+      <div className="overflow-x-auto">
+        <Card className="border-primary/20 min-w-[800px]">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-b-primary/20">
+                  <TableHead className="text-primary font-semibold">Patient</TableHead>
+                  <TableHead className="text-primary font-semibold">Doctor</TableHead>
+                  <TableHead className="text-primary font-semibold">Date</TableHead>
+                  <TableHead className="text-primary font-semibold">Time</TableHead>
+                  <TableHead className="text-primary font-semibold">Status</TableHead>
+                  <TableHead className="text-primary font-semibold text-right">Actions</TableHead>
                 </TableRow>
-              ) : (
-                filteredAppointments?.map((appointment) => (
-                  <TableRow
-                    key={appointment.id}
-                    className="hover:bg-primary/5 transition-colors border-b-primary/10"
-                  >
-                    <TableCell className="font-medium">
-                      {appointment.patientId?.firstName && appointment.patientId?.lastName
-                        ? `${appointment.patientId.firstName} ${appointment.patientId.lastName}`
-                        : "Unknown Patient"}
-                    </TableCell>
-                    <TableCell>
-                      {appointment.doctorId?.firstName && appointment.doctorId?.lastName
-                        ? `${appointment.doctorId.firstName} ${appointment.doctorId.lastName}`
-                        : "Unknown Doctor"}
-                    </TableCell>
-                    <TableCell>
-                      {appointment.appointmentDate
-                        ? format(new Date(appointment.appointmentDate), "MMM dd, yyyy")
-                        : "Date not set"}
-                    </TableCell>
-                    <TableCell>
-                      {appointment.appointmentDate
-                        ? format(new Date(appointment.appointmentDate), "hh:mm a")
-                        : "Time not set"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          appointment.status === "pending" ? "default" :
-                            appointment.status === "confirmed" ? "success" :
-                              "destructive"
-                        }
-                        className={cn(
-                          "capitalize",
-                          {
-                            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200": appointment.status === "pending",
-                            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200": appointment.status === "confirmed",
-                            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200": appointment.status === "cancelled"
-                          }
-                        )}
-                      >
-                        {appointment.status || "Unknown"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-primary/20 hover:border-primary/50 hover:bg-primary/5"
-                          >
-                            Update Status
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[160px]">
-                          <DropdownMenuItem
-                            onClick={() => handleStatusUpdate(appointment._id, "confirmed")}
-                            disabled={appointment.status === "confirmed"}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/50"
-                          >
-                            <CheckCircle2 className="mr-2 h-4 w-4" />
-                            Confirm
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleStatusUpdate(appointment._id, "cancelled")}
-                            disabled={appointment.status === "cancelled"}
-                            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
-                          >
-                            <XCircle className="mr-2 h-4 w-4" />
-                            Cancel
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  Array(3).fill(0).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filteredAppointments?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      <p className="text-muted-foreground">No appointments found</p>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                ) : (
+                  filteredAppointments?.map((appointment) => (
+                    <TableRow
+                      key={appointment._id}
+                      className="hover:bg-primary/5 transition-colors border-b-primary/10"
+                    >
+                      <TableCell className="font-medium">
+                        {appointment.patientId?.firstName && appointment.patientId?.lastName
+                          ? `${appointment.patientId.firstName} ${appointment.patientId.lastName}`
+                          : "Unknown Patient"}
+                      </TableCell>
+                      <TableCell>
+                        {appointment.doctorId?.firstName && appointment.doctorId?.lastName
+                          ? `${appointment.doctorId.firstName} ${appointment.doctorId.lastName}`
+                          : "Unknown Doctor"}
+                      </TableCell>
+                      <TableCell>
+                        {appointment.appointmentDate
+                          ? format(new Date(appointment.appointmentDate), "MMM dd, yyyy")
+                          : "Date not set"}
+                      </TableCell>
+                      <TableCell>
+                        {appointment.appointmentDate
+                          ? format(new Date(appointment.appointmentDate), "hh:mm a")
+                          : "Time not set"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            appointment.status === "pending" ? "default" :
+                              appointment.status === "confirmed" ? "success" :
+                                "destructive"
+                          }
+                          className={cn(
+                            "capitalize",
+                            {
+                              "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200": appointment.status === "pending",
+                              "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200": appointment.status === "confirmed",
+                              "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200": appointment.status === "cancelled"
+                            }
+                          )}
+                        >
+                          {appointment.status || "Unknown"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-primary/20 hover:border-primary/50 hover:bg-primary/5"
+                            >
+                              Update Status
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-[160px]">
+                            <DropdownMenuItem
+                              onClick={() => handleStatusUpdate(appointment._id, "confirmed")}
+                              disabled={appointment.status === "confirmed"}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/50"
+                            >
+                              <CheckCircle2 className="mr-2 h-4 w-4" />
+                              Confirm
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleStatusUpdate(appointment._id, "cancelled")}
+                              disabled={appointment.status === "cancelled"}
+                              className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+                            >
+                              <XCircle className="mr-2 h-4 w-4" />
+                              Cancel
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 } 

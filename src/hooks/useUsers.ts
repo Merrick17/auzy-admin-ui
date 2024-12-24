@@ -1,37 +1,75 @@
-import { useAtom } from 'jotai';
-import { usersAtom, selectedUserAtom, doctorsAtom } from '../atoms/users';
-import axios from 'axios';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import apiClient from '@/lib/api-client';
+import { User } from '@/types';
 
-export const useUsers = () => {
-  const [users, setUsers] = useAtom(usersAtom);
-  const [selectedUser, setSelectedUser] = useAtom(selectedUserAtom);
-  const [doctors, setDoctors] = useAtom(doctorsAtom);
-
-  const fetchUsers = async () => {
-    const response = await axios.get('/users');
-    setUsers(response.data);
+interface PaginatedResponse {
+  data: User[];
+  meta: {
+    totalItems: number;
+    itemsPerPage: number;
+    totalPages: number;
+    currentPage: number;
   };
+}
 
-  const fetchDoctors = async (speciality?: string) => {
-    const response = await axios.get('/users/doctors', {
-      params: { speciality },
-    });
-    setDoctors(response.data);
-  };
+export const useUsers = (page = 1, limit = 10) => {
+  return useQuery<PaginatedResponse>({
+    queryKey: ['users', page, limit],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/users', {
+        params: { page, limit }
+      });
+      return data;
+    }
+  });
+};
 
-  const updateUser = async (id: string, userData: any) => {
-    const response = await axios.patch(`/users/${id}`, userData);
-    setUsers(users.map(user => user.id === id ? response.data : user));
-    return response.data;
-  };
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
 
-  return {
-    users,
-    selectedUser,
-    doctors,
-    fetchUsers,
-    fetchDoctors,
-    updateUser,
-    setSelectedUser,
-  };
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const { data } = await apiClient.post('/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, formData }: { id: string; formData: FormData }) => {
+      const { data } = await apiClient.patch(`/users/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await apiClient.delete(`/admin/user/${id}`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
 }; 
