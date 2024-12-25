@@ -116,17 +116,13 @@ export default function UsersPage() {
             Manage user accounts and permissions
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              className="w-full sm:w-auto flex items-center gap-2"
-              onClick={() => setIsAddDialogOpen(true)}
-            >
-              <UserPlus className="h-4 w-4" />
-              Add User
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <Button 
+          className="w-full sm:w-auto flex items-center gap-2"
+          onClick={() => setIsAddDialogOpen(true)}
+        >
+          <UserPlus className="h-4 w-4" />
+          Add User
+        </Button>
       </div>
 
       {/* Search and filters */}
@@ -167,7 +163,7 @@ export default function UsersPage() {
             </TableHeader>
             <TableBody>
               {filteredUsers.map((user) => (
-                <TableRow key={user._id} className="hover:bg-muted/50">
+                <TableRow key={user.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8 shrink-0">
@@ -275,6 +271,11 @@ export default function UsersPage() {
         open={!!editingUser}
         onOpenChange={(open) => !open && setEditingUser(null)}
         user={editingUser}
+      />
+
+      <AddUserDialog 
+        open={isAddDialogOpen} 
+        onOpenChange={setIsAddDialogOpen}
       />
     </div>
   );

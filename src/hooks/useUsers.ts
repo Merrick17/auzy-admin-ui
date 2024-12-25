@@ -65,7 +65,7 @@ export const useDeleteUser = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data } = await apiClient.delete(`/admin/user/${id}`);
+      const { data } = await apiClient.delete(`/users/${id}`);
       return data;
     },
     onSuccess: () => {

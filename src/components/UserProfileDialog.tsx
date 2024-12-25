@@ -13,7 +13,14 @@ interface UserProfileDialogProps {
   user: User;
 }
 
-// Add this helper function at the top of the file, after imports
+// Add role badge variants
+const roleBadgeVariants = {
+  admin: 'default',
+  doctor: 'secondary',
+  patient: 'outline'
+} as const;
+
+// Helper function for profile picture URL
 const getProfilePictureUrl = (profilePicture: string | null | undefined) => {
   if (!profilePicture) return '';
   if (profilePicture.startsWith('http://') || profilePicture.startsWith('https://')) {
@@ -23,46 +30,40 @@ const getProfilePictureUrl = (profilePicture: string | null | undefined) => {
 };
 
 export function UserProfileDialog({ user }: UserProfileDialogProps) {
-  if (!user) return null;
-
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] w-[90vw] overflow-hidden">
-      <DialogHeader>
+    <DialogContent className="max-w-3xl h-[90vh] p-0 overflow-hidden flex flex-col">
+      <DialogHeader className="px-6 py-4">
         <DialogTitle>User Profile</DialogTitle>
       </DialogHeader>
-      <ScrollArea className="max-h-[calc(90vh-8rem)]">
-        <div className="space-y-6 p-1">
-          {/* Header with basic info */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <Avatar className="h-20 w-20 sm:h-16 sm:w-16">
-              <AvatarImage 
-                src={getProfilePictureUrl(user?.profilePicture)} 
-                alt={`${user?.firstName} ${user?.lastName}`} 
-              />
-              <AvatarFallback>
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-y-1 text-center sm:text-left">
-              <h2 className="text-2xl font-bold">
-                {user.firstName} {user.lastName}
-              </h2>
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <Badge
-                  variant={user.role === 'admin' ? 'default' :
-                    user.role === 'doctor' ? 'secondary' : 'outline'}
-                  className="capitalize"
-                >
-                  {user.role}
-                </Badge>
-                {user.isVerified && (
-                  <Badge variant="outline" className="bg-green-100 text-green-700">
-                    Verified
+      <ScrollArea className="flex-1">
+        <div className="space-y-6 px-6 pb-6">
+          {/* Basic Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage 
+                    src={getProfilePictureUrl(user.profilePicture)} 
+                    alt={`${user.firstName} ${user.lastName}`}
+                  />
+                  <AvatarFallback className="text-lg">
+                    {user.firstName[0]}{user.lastName[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-xl font-semibold">
+                    {user.firstName} {user.lastName}
+                  </h3>
+                  <Badge variant={roleBadgeVariants[user.role]} className="mt-1">
+                    {user.role}
                   </Badge>
-                )}
+                </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Contact Information */}
           <Card>
@@ -89,6 +90,7 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
           {/* Doctor Specific Information */}
           {user.role === "doctor" && (
             <>
+              {/* Specialties/Tags */}
               {user.tags && user.tags.length > 0 && (
                 <Card>
                   <CardHeader>
@@ -96,9 +98,9 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {user.tags.map((tag:any, index:number) => (
+                      {user.tags.map((tag, index) => (
                         <Badge 
-                          key={index.toString()} 
+                          key={index} 
                           variant="secondary"
                           className="capitalize"
                         >
@@ -110,29 +112,68 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
                 </Card>
               )}
 
-              {user.description && (
+              {/* Education */}
+              {user.education && user.education.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Description</CardTitle>
+                    <CardTitle className="text-lg">Education</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{user.description}</p>
+                  <CardContent className="space-y-2">
+                    {user.education.map((edu, index) => (
+                      <div key={index} className="border-b last:border-0 pb-2 last:pb-0">
+                        <p className="font-medium">{edu.degree}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {edu.institution} • {edu.year}
+                        </p>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               )}
 
-              {user.about && (
+              {/* Experience */}
+              {user.experience && user.experience.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">About</CardTitle>
+                    <CardTitle className="text-lg">Experience</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">{user.about}</p>
+                  <CardContent className="space-y-2">
+                    {user.experience.map((exp, index) => (
+                      <div key={index} className="border-b last:border-0 pb-2 last:pb-0">
+                        <p className="font-medium">{exp.position}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {exp.hospital} • {exp.startYear} - {exp.current ? 'Present' : exp.endYear}
+                        </p>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               )}
 
-              {/* Add rating and reviews if doctor */}
+              {/* Description & About */}
+              {(user.description || user.about) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Additional Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {user.description && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Description</p>
+                        <p>{user.description}</p>
+                      </div>
+                    )}
+                    {user.about && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">About</p>
+                        <p>{user.about}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Ratings & Reviews */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Ratings & Reviews</CardTitle>
@@ -150,23 +191,6 @@ export function UserProfileDialog({ user }: UserProfileDialogProps) {
               </Card>
             </>
           )}
-
-          {/* Account Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Account Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Member Since</p>
-                <p>{new Date(user.createdAt).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Last Updated</p>
-                <p>{new Date(user.updatedAt).toLocaleDateString()}</p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </ScrollArea>
     </DialogContent>
