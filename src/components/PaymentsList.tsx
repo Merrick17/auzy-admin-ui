@@ -21,8 +21,8 @@ export default function PaymentsList() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {payments?.map((payment) => (
-          <TableRow key={payment.id}>
+        {payments?.map((payment, ind) => (
+          <TableRow key={ind.toString()}>
             <TableCell>{payment.customerName}</TableCell>
             <TableCell>${payment.amount.toFixed(2)}</TableCell>
             <TableCell>{payment.paymentMethod}</TableCell>
