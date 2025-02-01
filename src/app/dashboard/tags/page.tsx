@@ -198,7 +198,7 @@ export default function TagsPage() {
               {isLoading ? (
                 // Show loading skeleton
                 Array(5).fill(0).map((_, i) => (
-                  <TableRow key={`skeleton-${i}`}>
+                  <TableRow key={`skeleton-${i.toString()}`}>
                     <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
@@ -215,7 +215,7 @@ export default function TagsPage() {
                 </TableRow>
               ) : (
                 // Show tags data
-                tagsResponse?.data.items.map((tag,ind) => (
+                tagsResponse?.data.items.map((tag, ind) => (
                   <TableRow key={ind.toString()}>
                     <TableCell className="font-medium">{tag.name}</TableCell>
                     <TableCell>

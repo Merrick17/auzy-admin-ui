@@ -175,8 +175,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-6">
-              {stats?.topDoctors.map((doctor) => (
-                <div key={doctor.id} className="flex items-center justify-between hover:bg-slate-50 p-2 rounded-lg transition-colors">
+              {stats?.topDoctors.map((doctor, ind) => (
+                <div key={ind.toString()} className="flex items-center justify-between hover:bg-slate-50 p-2 rounded-lg transition-colors">
                   <div className="flex items-center space-x-4">
                     <Avatar>
                       <AvatarImage src={doctor.profilePicture} />
@@ -214,7 +214,7 @@ function DashboardSkeleton() {
       <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array(4).fill(0).map((_, i) => (
-          <Card key={i}>
+          <Card key={i.toString()}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-4 w-[100px]" />
               <Skeleton className="h-4 w-4" />
@@ -227,14 +227,14 @@ function DashboardSkeleton() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {Array(2).fill(0).map((_, i) => (
-          <Card key={`skeleton-card-${i}`}>
+          <Card key={`skeleton-card-${i.toString()}`}>
             <CardHeader>
               <Skeleton className="h-6 w-[140px]" />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {Array(4).fill(0).map((_, j) => (
-                  <div key={`skeleton-item-${i}-${j}`} className="flex items-center space-x-4">
+                  <div key={`skeleton-item-${i.toString()}-${j.toString()}`} className="flex items-center space-x-4">
                     <Skeleton className="h-10 w-10 rounded-full" />
                     <div className="space-y-2">
                       <Skeleton className="h-4 w-[150px]" />

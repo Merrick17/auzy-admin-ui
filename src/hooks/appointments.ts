@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api-client';
 import { Appointment, CreateAppointmentDto } from '@/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useAppointments = () => {
   return useQuery<Appointment[]>({
@@ -42,7 +42,7 @@ export const useUpdateAppointmentStatus = () => {
 
   return useMutation<Appointment, Error, { id: string; status: string }>({
     mutationFn: async ({ id, status }) => {
-      const { data } = await apiClient.patch(`/appointments/${id}/status`, { status });
+      const { data } = await apiClient.put(`/appointments/${id}/status`, { status });
       return data.data;
     },
     onSuccess: () => {
