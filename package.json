@@ -28,14 +28,14 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@tanstack/react-query": "^5.59.20",
     "@uiw/react-md-editor": "^4.0.4",
-    "axios": "^1.7.7",
+    "axios": "^1.18.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^4.1.0",
     "jotai": "^2.10.1",
     "lucide-react": "^0.454.0",
-    "next": "15.0.3",
+    "next": "16.3.1",
     "next-themes": "^0.4.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -49,7 +49,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5"
   }
 }
